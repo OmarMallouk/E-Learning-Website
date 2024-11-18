@@ -1,5 +1,12 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
+header('Content-Type: application/json'); // Ensure JSON output
+
+include 'connection.php';
+
 class User {
     private $name;
     private $email;
@@ -35,12 +42,46 @@ class User {
             return false;
         }
     }
-    
+
     public function displayInfo() {
-        return json_encode(["name" => $this->name, "email" => $this->email, "role" => $this->role]);
+        return ["name" => $this->name, "email" => $this->email, "role" => $this->role];
     }
 }
 
+$method = $_SERVER['REQUEST_METHOD'];
 
+switch ($method) {
+    case 'POST':
+        $data = json_decode(file_get_contents('php://input'), true);
 
-?>
+        if (isset($data['name'], $data['email'], $data['password'], $data['role'])) {
+            $user = new User($data['name'], $data['email'], $data['password'], $data['role'], $conn);
+            if ($user->save()) {
+                echo json_encode($user->displayInfo());
+            } else {
+                echo json_encode(["error" => "Failed to save user to the database."]);
+            }
+            break;
+        }
+
+        if (isset($data['password']) && !isset($data['name']) && !isset($data['email'])) {
+            $isValidPassword = User::check_password($data['password']);
+            echo json_encode(["password_valid" => $isValidPassword]);
+            break;
+        }
+
+        if (isset($data['email']) && !isset($data['name']) && !isset($data['password'])) {
+            $isValidEmail = User::validate_email($data['email']);
+            echo json_encode(["email_valid" => $isValidEmail]);
+            break;
+        }
+
+        echo json_encode(["error" => "Invalid input data"]);
+        break;
+
+    default:
+        echo json_encode(["error" => "Method not allowed"]);
+        break;
+}
+
+$conn->close();
