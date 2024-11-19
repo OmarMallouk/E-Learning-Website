@@ -4,7 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET");
 header("Access-Control-Allow-Headers: Content-Type");
 
-include 'db_connect.php'; 
+include 'connection.php'; 
 require_once 'vendor/autoload.php';
 
 use Firebase\JWT\JWT;
@@ -14,23 +14,25 @@ $secret_key = 'omarito';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-$username = $data['username'] ?? '';
+$name = $data['name'] ?? '';
 $password = $data['password'] ?? '';
 
-if (empty($username) || empty($password)) {
-    echo json_encode(['success' => false, 'error' => 'Username and password are required']);
+if (empty($name) || empty($password)) {
+    echo json_encode(['success' => false, 'error' => 'name and password are required']);
     exit;
 }
 
-$sql = "SELECT * FROM users WHERE username = ?";
+$sql = "SELECT * FROM users WHERE name = ?";
 $query = $conn->prepare($sql);
-$query->bind_param("s", $username);
+$query->bind_param("s", $name);
 $query->execute();
 $result = $query->get_result();
 $user = $result->fetch_assoc();
 
 if ($user && password_verify($password, $user['password'])) {
-    $role = $user['role'];
+    $role = trim($user['role']); // Remove any potential whitespace
+    error_log("User role: $role"); // Log the role for debugging
+
     $payload = [
         'iss' => 'elearning',
         'iat' => time(),
@@ -42,13 +44,15 @@ if ($user && password_verify($password, $user['password'])) {
     $jwt = JWT::encode($payload, $secret_key, 'HS256');
     if ($role === 'instructor') {
         echo json_encode(['success' => true, 'token' => $jwt, 'message' => 'Instructor access granted']);
-    } elseif ($role === 'user') {
-        echo json_encode(['success' => true, 'token' => $jwt, 'message' => 'User access granted']);
+    } elseif ($role === 'student') {
+        echo json_encode(['success' => true, 'token' => $jwt, 'message' => 'Student access granted']);
+    } elseif ($role === 'admin') {
+        echo json_encode(['success' => true, 'token' => $jwt, 'message' => 'Admin access granted']);
     } else {
         echo json_encode(['success' => false, 'error' => 'Unauthorized role']);
     }
 } else {
-    echo json_encode(['success' => false, 'error' => 'Invalid username or password']);
+    echo json_encode(['success' => false, 'error' => 'Invalid name or password']);
 }
 
 $query->close();

@@ -25,6 +25,7 @@ const Signup =() =>{
 
             });
             if (response.data.success){
+                console.log("Signup success");
                 navigate('/');
 
             }else{
@@ -71,8 +72,8 @@ const Signup =() =>{
                         onChange={(e) => setRole(e.target.value)}
                     >
                         <option value="">Select type</option>
-                        <option value="income">Student</option>
-                        <option value="expense">Instructor</option>
+                        <option value="student">Student</option>
+                        <option value="instructor">Instructor</option>
                     </select>
                 </div>
             <button type="submit" className="btn">Signup</button>

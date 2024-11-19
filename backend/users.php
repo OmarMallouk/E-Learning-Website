@@ -6,6 +6,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 header('Content-Type: application/json'); // Ensure JSON output
 
 include 'connection.php';
+include 'auth.php';
 
 class User {
     private $name;
@@ -31,7 +32,21 @@ class User {
         return filter_var($email, FILTER_VALIDATE_EMAIL) ? true : false;
     }
 
+
+    public function checkIfExists() {
+        $sql = "SELECT * FROM users WHERE email = ? OR name = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss", $this->email, $this->name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0; 
+    }
+
     public function save() {
+        if ($this->checkIfExists()) {
+            return false;
+        }
+
         $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("ssss", $this->name, $this->email, $this->password, $this->role);
@@ -57,7 +72,7 @@ switch ($method) {
         if (isset($data['name'], $data['email'], $data['password'], $data['role'])) {
             $user = new User($data['name'], $data['email'], $data['password'], $data['role'], $conn);
             if ($user->save()) {
-                echo json_encode($user->displayInfo());
+                echo json_encode(["success" => true, "message" => "User registered successfully", "user" => $user->displayInfo()]);
             } else {
                 echo json_encode(["error" => "Failed to save user to the database."]);
             }
