@@ -6,7 +6,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 header('Content-Type: application/json'); // Ensure JSON output
 
 include 'connection.php';
-include 'auth.php';
+include 'verify.php';
 
 class User {
     private $name;
