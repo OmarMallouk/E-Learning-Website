@@ -1,0 +1,10 @@
+.App {
+    display: flex;
+    flex-direction: column;
+    /* padding: 50px; */
+  }
+
+  /* .App > input {
+    width: 300px;
+  }
+   */

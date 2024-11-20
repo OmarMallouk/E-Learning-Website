@@ -1,4 +1,4 @@
-import './App.css';
+import './styles/app.css';
 import Navbar from './components/navbar';
 import Signup from './components/singup';
 import Login from './components/login';
