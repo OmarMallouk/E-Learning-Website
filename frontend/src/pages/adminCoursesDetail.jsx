@@ -11,10 +11,11 @@ const AdminCoursesDetails =() =>{
     const [instructors, setInstructors] = useState([]);
     const [newCourse, setNewCourse] = useState({ title: '', description: '', instructors: '' });
     const [editCourse, setEditCourse] = useState({ course_id: '', title: '', description: '' });
-    const [deleteCourseId, setDeleteCourseId] = useState(null);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [selectedInstructors, setSelectedInstructors] = useState([]);
+    const [courseId, setCourseId] = useState("");
+    const [message, setMessage] = useState("");
     const [error, setError] = useState(null);
 
 
@@ -50,14 +51,40 @@ const AdminCoursesDetails =() =>{
         }
       };
 
+
       const handleDeleteCourse = async () => {
+        if (!courseId) {
+          setMessage("Course ID is required");
+          return;
+        }
+    
         try {
-          await axios.delete(`http://localhost/reactELearning/backend/admin_delete_course.php?id=${deleteCourseId}`);
-          getAll(); 
+          const response = await axios.delete(
+            `http://localhost/reactELearning/backend/admin_delete_course.php?id=${courseId}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+    
+          // Display success message
+          if (response.data) {
+            setMessage("Course deleted successfully");
+          }
         } catch (error) {
-          console.error('Error deleting course', error);
+          console.error("Error deleting course", error);
+          if (error.response) {
+            const errorMsg =
+              error.response.data?.message || "Error deleting course";
+            setMessage(errorMsg);
+          } else {
+            setMessage("Something went wrong. Please try again later.");
+          }
         }
       };
+
       
       useEffect(() => {
         getAll();
@@ -202,22 +229,41 @@ const AdminCoursesDetails =() =>{
         )}
       </div>
 
-    
-      <div>
-        <h2>Delete Course</h2>
-        <select
-          onChange={(e) => setDeleteCourseId(e.target.value)}
-          value={deleteCourseId}
-        >
-          <option value="">Select a Course to Delete</option>
-          {courses.map((course) => (
-            <option key={course.course_id} value={course.course_id}>
-              {course.title}
-            </option>
-          ))}
-        </select>
-        {deleteCourseId && <button onClick={handleDeleteCourse}>Delete Course</button>}
-      </div>
+      <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
+      <h3>Delete a Course</h3>
+      <input
+        type="text"
+        placeholder="Enter Course ID"
+        value={courseId}
+        onChange={(e) => setCourseId(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "10px",
+          borderRadius: "5px",
+          border: "1px solid #ccc",
+        }}
+      />
+      <button
+        onClick={handleDeleteCourse}
+        style={{
+          background: "#ff4d4d",
+          color: "#fff",
+          padding: "10px",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+          width: "100%",
+        }}
+      >
+        Delete Course
+      </button>
+      {message && (
+        <p style={{ marginTop: "10px", color: message.includes("successfully") ? "green" : "red" }}>
+          {message}
+        </p>
+      )}
+    </div>
 
      -
       <div>
