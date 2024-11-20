@@ -142,6 +142,14 @@ const Instructor = () => {
             console.error("Failed to fetch assignments", error);
         }
     };
+    
+
+
+    const handleStudent = () => { 
+        navigate('/inviteStudent'); };
+    
+
+
 
 
 
@@ -149,7 +157,7 @@ const Instructor = () => {
         <div className="Instructor-dashboard">
             <Navbar />
             <h1>Welcome Instructor</h1>
-            
+
             <div>
                 <h1>Available Courses</h1>
                 <div className="sections">
@@ -250,6 +258,8 @@ const Instructor = () => {
                     <button onClick={closeAssignmentForm}>Cancel</button>
                 </div>
             )}
+
+            <button onClick={handleStudent} className="btn">Invite studens</button>
         </div>
     );
 };

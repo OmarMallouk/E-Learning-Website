@@ -9,6 +9,7 @@ import './App.css';
 
 import { Routes, Route, useLocation } from "react-router-dom";
 import AdminCoursesDetails from './pages/adminCoursesDetail';
+import StudentInvite from './pages/studentInvite';
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/studentDash" element={ <Student/>}/>
         <Route path="/adminDash" element={ <Admin/>}/>
         <Route path="/adminCoursesDetail" element={ <AdminCoursesDetails/>}/>
+        <Route path="/inviteStudent" element={ <StudentInvite/>}/>
      
       </Routes>
     </div>

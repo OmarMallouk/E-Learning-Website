@@ -192,15 +192,7 @@ const AdminCoursesDetails =() =>{
         }
       };
 
-      //////////////////////
-
-
-     
-    
-
-      const handleLogout = () => { 
-        localStorage.removeItem('token');
-        navigate('/'); };
+      ////////////////////
 
     return(
         <div className="main">
@@ -381,7 +373,7 @@ const AdminCoursesDetails =() =>{
         </div>
       </div>
 
-        <button onClick={handleLogout} className="btn">Logout</button>
+      
 
         </div>
     );
