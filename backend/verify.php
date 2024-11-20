@@ -30,8 +30,8 @@ function verifyToken($secret_key) {
 
 // Function to check if the user's role is 'admin'
 function checkAdminRole($decodedToken) {
-    if ($decodedToken['role'] !== 'admin') {
-        echo json_encode(['success' => false, 'error' => 'Access denied: Admins only']);
+    if ($decodedToken['role'] !== 'admin' && $decodedToken['role'] !== 'instructor') {
+        echo json_encode(['success' => false, 'error' => 'Access denied: Admins or instructors']);
         http_response_code(403); 
         exit;
     }
