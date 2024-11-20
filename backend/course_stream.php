@@ -41,10 +41,10 @@ if ($result->num_rows == 0) {
     exit;
 }
 
-$announcementsQuery = $conn->prepare("SELECT * FROM announcements WHERE course_id = ? ORDER BY created_at DESC");
-$announcementsQuery->bind_param("i", $course_id);
-$announcementsQuery->execute();
-$announcementsResult = $announcementsQuery->get_result();
+$annQuery = $conn->prepare("SELECT * FROM announcements WHERE course_id = ? ORDER BY created_at DESC");
+$annQuery->bind_param("i", $course_id);
+$annQuery->execute();
+$announcementsResult = $annQuery->get_result();
 
 $announcements = [];
 while ($announcement = $announcementsResult->fetch_assoc()) {
@@ -70,7 +70,7 @@ $response = [
 
 echo json_encode($response);
 
-$announcementsQuery->close();
+$annQuery->close();
 $assignmentsQuery->close();
 $query->close();
 $conn->close();

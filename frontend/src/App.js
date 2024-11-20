@@ -1,10 +1,10 @@
-import './styles/app.css';
 import Navbar from './components/navbar';
 import Signup from './components/singup';
 import Login from './components/login';
 import Instructor from './components/instructor-dashboard';
 import Student from './components/user-dashboard';
 import Admin from './components/adminDashboard';
+import './App.css';
 
 import { Routes, Route, useLocation } from "react-router-dom";
 

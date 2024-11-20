@@ -3,7 +3,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
-header('Content-Type: application/json'); // Ensure JSON output
+header('Content-Type: application/json'); 
 
 include 'connection.php';
 include 'verify.php';

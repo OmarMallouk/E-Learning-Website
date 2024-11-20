@@ -9,7 +9,7 @@ include 'verify.php';
 
 $secret_key = 'omarito';
 
-// Verify the token and get decoded user data
+// Verify token and get decoded user data
 $decodedToken = verifyToken($secret_key);
 
 // Check if token decoded

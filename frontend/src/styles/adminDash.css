@@ -1,0 +1,14 @@
+.sections{
+   display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+
+.section1, .section2, .section3{
+    flex: 1;
+     padding: 10px;
+      border: 1px solid #ddd;
+}
+
+

@@ -30,8 +30,8 @@ $result = $query->get_result();
 $user = $result->fetch_assoc();
 
 if ($user && password_verify($password, $user['password'])) {
-    $role = trim($user['role']); // Remove any potential whitespace
-    error_log("User role: $role"); // Log the role for debugging
+    $role = trim($user['role']); // Remove whitespace
+    error_log("User role: $role"); 
 
     $payload = [
         'iss' => 'elearning',

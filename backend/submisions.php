@@ -9,14 +9,14 @@ include 'verify.php';
 
 $secret_key = 'omarito';
 
-// Enable error reporting for debugging
+// for debugging
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Step 1: Verify the token and get the decoded user data
+// Step 1: Verify token 
 $decodedToken = verifyToken($secret_key);
 
-// Step 2: Check if the token was decoded properly
+// Step 2: Check is token was decoded?
 if ($decodedToken === null) {
     echo json_encode(['success' => false, 'error' => 'Unauthorized. No token provided.']);
     exit;
@@ -25,24 +25,22 @@ if ($decodedToken === null) {
 $student_id = $decodedToken['user_id'] ?? null;
 $role = $decodedToken['role'] ?? null;
 
-// Ensure the user is a student
 if ($role !== 'student') {
     echo json_encode(['success' => false, 'error' => 'Access denied. Only students can submit assignments.']);
     exit;
 }
 
-// Step 3: Get the assignment_id from the POST request
+// Step 3: Get the assignment_id 
 $data = json_decode(file_get_contents("php://input"), true);
 $assignment_id = $data['assignment_id'] ?? null;
-$course_id = $data['course_id'] ?? null; // Optional, just to validate if needed
+$course_id = $data['course_id'] ?? null; 
 
-// Validate inputs
 if (empty($assignment_id)) {
     echo json_encode(['success' => false, 'error' => 'Assignment ID is required.']);
     exit;
 }
 
-// Step 4: Check if the assignment exists for the given course (optional check)
+// Step 4: Check if the assignment exists for the given course 
 $query = $conn->prepare("SELECT * FROM assignments WHERE assignment_id = ?");
 $query->bind_param("i", $assignment_id);
 $query->execute();
@@ -70,7 +68,7 @@ if ($attachment['size'] > 10485760) {
     exit;
 }
 
-// Validate file type (e.g., allow only PDF, DOCX, and images)
+// Validate file type
 $allowed_types = ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 if (!in_array($attachment['type'], $allowed_types)) {
     echo json_encode(['success' => false, 'error' => 'Invalid file type. Only PDF, DOCX, and images are allowed.']);
@@ -83,7 +81,7 @@ if (!move_uploaded_file($attachment['tmp_name'], $file_path)) {
     exit;
 }
 
-// Step 6: Insert the submission record into the database
+// Step 6: Insert into the database
 $insertQuery = $conn->prepare("INSERT INTO assignment_submissions (assignment_id, student_id, file_path) VALUES (?, ?, ?)");
 $insertQuery->bind_param("iis", $assignment_id, $student_id, $file_path);
 if ($insertQuery->execute()) {
@@ -92,7 +90,6 @@ if ($insertQuery->execute()) {
     echo json_encode(['success' => false, 'error' => 'Failed to submit assignment.']);
 }
 
-// Close the database connections
 $insertQuery->close();
 $query->close();
 $conn->close();
