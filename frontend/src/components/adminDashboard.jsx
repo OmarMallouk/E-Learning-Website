@@ -44,6 +44,9 @@ const Admin = () =>{
     const handleLogout = () => { 
         localStorage.removeItem('token');
         navigate('/'); };
+
+        const handleNavigate = () => { 
+            navigate('/adminCoursesDetail'); };
     
     
     return(
@@ -96,6 +99,8 @@ const Admin = () =>{
       ) : (
         <p>No courses available.</p>
       )}
+
+      <button onClick={handleNavigate} className="btn1" >View More.</button>
         </div>
 
     </div>
