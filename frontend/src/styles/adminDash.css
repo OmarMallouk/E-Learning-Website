@@ -75,3 +75,40 @@ form {
     background-color: #1c5980;
   }
   
+.deleteDiv{
+  padding: 20px;
+   max-width: 400px;
+   margin: auto; 
+}
+  .deletebtn{
+      background: #ff4d4d;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    
+  }
+
+  .deleteInput{
+  
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+   
+  }
+
+
+  .editbtn{
+    background: #3795c0;
+    color: #fff;
+    padding: 6px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+    width: 5%;
+  }

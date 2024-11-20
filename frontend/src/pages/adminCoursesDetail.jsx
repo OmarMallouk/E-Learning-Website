@@ -6,17 +6,24 @@ import "../styles/adminDash.css"
 
 
 const AdminCoursesDetails =() =>{
-    const navigate = useNavigate();
-    const [courses, setCourses] = useState([]);
-    const [instructors, setInstructors] = useState([]);
-    const [newCourse, setNewCourse] = useState({ title: '', description: '', instructors: '' });
-    const [editCourse, setEditCourse] = useState({ course_id: '', title: '', description: '' });
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [selectedInstructors, setSelectedInstructors] = useState([]);
-    const [courseId, setCourseId] = useState("");
-    const [message, setMessage] = useState("");
-    const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [instructors, setInstructors] = useState([]);
+  const [newCourse, setNewCourse] = useState({ title: "", description: "", instructors: "" });
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [editCourseData, setEditCourseData] = useState({
+    course_id: "",
+    title: "",
+    description: "",
+    instructors: [],
+  });
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedInstructors, setSelectedInstructors] = useState([]);
+  const [courseId, setCourseId] = useState("");
+  const [message, setMessage] = useState("");
+  const [editMessage, setEditMessage] = useState("");
+  const [error, setError] = useState(null);
 
 
     const getAll = async () => {
@@ -42,15 +49,6 @@ const AdminCoursesDetails =() =>{
         }
       };
 
-      const handleEditCourse = async () => {
-        try {
-          await axios.put('http://localhost/reactELearning/backend/admin_edit_course.php', editCourse);
-          getAll(); 
-        } catch (error) {
-          console.error('Error editing course', error);
-        }
-      };
-
 
       const handleDeleteCourse = async () => {
         if (!courseId) {
@@ -69,7 +67,6 @@ const AdminCoursesDetails =() =>{
             }
           );
     
-          // Display success message
           if (response.data) {
             setMessage("Course deleted successfully");
           }
@@ -84,7 +81,7 @@ const AdminCoursesDetails =() =>{
           }
         }
       };
-
+    
       
       useEffect(() => {
         getAll();
@@ -145,6 +142,62 @@ const AdminCoursesDetails =() =>{
       };
 
 
+
+      /////////////////////////////////////////////
+
+      const handleEditCourse = async (e) => {
+        e.preventDefault();
+        const { course_id, title, description, instructors } = editCourseData;
+    
+        if (!course_id || !title || !description || instructors.length === 0) {
+          setError("Please fill out all fields and select at least one instructor.");
+          return;
+        }
+    
+        try {
+          const response = await axios.put(
+            "http://localhost/reactELearning/backend/admin_edit_course.php",
+            {
+              course_id,
+              title,
+              description,
+              instructors,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: localStorage.token,
+              },
+            }
+          );
+    
+          if (response.data.success) {
+            setCourses((prevCourses) =>
+              prevCourses.map((course) =>
+                course.course_id === course_id
+                  ? { ...course, title, description, instructors }
+                  : course
+              )
+            );
+            setSelectedCourse(null);
+            setEditCourseData({ course_id: "", title: "", description: "", instructors: [] });
+            setError(null);
+            alert("Course updated successfully!");
+          } else {
+            setError(response.data.error);
+          }
+        } catch (error) {
+          console.error("Error editing course:", error);
+          setError("There was an error updating the course.");
+        }
+      };
+
+      //////////////////////
+
+
+     
+    
+
       const handleLogout = () => { 
         localStorage.removeItem('token');
         navigate('/'); };
@@ -196,65 +249,116 @@ const AdminCoursesDetails =() =>{
         <button className="b2" type="submit">Add Course</button>
       </form>
       </div>
+           
+      <div className="sect">
+        <h1>Edit Course</h1>
+        {error && <p>{error}</p>}
 
-    
-      <div>
-        <h2>Edit Course</h2>
-        <select
-          onChange={(e) => setEditCourse({ ...editCourse, course_id: e.target.value })}
-          value={editCourse.course_id}
-        >
-          <option value="">Select a Course</option>
-          {courses.map((course) => (
-            <option key={course.course_id} value={course.course_id}>
-              {course.title}
-            </option>
-          ))}
-        </select>
-        {editCourse.course_id && (
-          <>
-            <input
-              type="text"
-              value={editCourse.title}
-              onChange={(e) => setEditCourse({ ...editCourse, title: e.target.value })}
-              placeholder="Course Title"
-            />
-            <textarea
-              value={editCourse.description}
-              onChange={(e) => setEditCourse({ ...editCourse, description: e.target.value })}
-              placeholder="Course Description"
-            />
-            <button onClick={handleEditCourse}>Edit Course</button>
-          </>
+        {selectedCourse ? (
+          <form onSubmit={handleEditCourse} className="section4">
+            <div>
+              <label htmlFor="editTitle">Course Title</label>
+              <input
+                type="text"
+                id="editTitle"
+                value={editCourseData.title}
+                onChange={(e) =>
+                  setEditCourseData({ ...editCourseData, title: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="editDescription">Course Description</label>
+              <textarea
+                id="editDescription"
+                value={editCourseData.description}
+                onChange={(e) =>
+                  setEditCourseData({
+                    ...editCourseData,
+                    description: e.target.value,
+                  })
+                }
+                required
+              />
+            </div>
+
+            <div>
+              <label>Select Instructors for the Course</label>
+              <select
+                multiple
+                value={editCourseData.instructors}
+                onChange={(e) =>
+                  setEditCourseData({
+                    ...editCourseData,
+                    instructors: [...e.target.selectedOptions].map(
+                      (option) => option.value
+                    ),
+                  })
+                }
+              >
+                {instructors.map((instructor) => (
+                  <option key={instructor.user_id} value={instructor.user_id}>
+                    {instructor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button className="b2" type="submit">
+              Update Course
+            </button>
+            <button
+              className="b2"
+              type="button"
+              onClick={() => setSelectedCourse(null)}
+            >
+              Cancel
+            </button>
+          </form>
+        ) : (
+          <div>
+            <h3>Select a Course to Edit</h3>
+            <ul>
+              {courses.map((course) => (
+                <li key={course.course_id}>
+                  <span>{course.title}</span>
+                  <button className="editbtn"
+                    onClick={() => {
+                      setSelectedCourse(course);
+                      setEditCourseData({
+                        course_id: course.course_id,
+                        title: course.title,
+                        description: course.description,
+                        instructors: course.instructors,
+                      });
+                    }}
+                  >
+                    Edit
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 
-      <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
+      
+
+      <div className="deleteDiv">
       <h3>Delete a Course</h3>
       <input
+      className="deleteInput"
         type="text"
         placeholder="Enter Course ID"
         value={courseId}
         onChange={(e) => setCourseId(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "10px",
-          marginBottom: "10px",
-          borderRadius: "5px",
-          border: "1px solid #ccc",
-        }}
+       
       />
-      <button
+      <button className="deletebtn"
         onClick={handleDeleteCourse}
-        style={{
-          background: "#ff4d4d",
-          color: "#fff",
-          padding: "10px",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          width: "100%",
-        }}
+      
       >
         Delete Course
       </button>
@@ -265,8 +369,7 @@ const AdminCoursesDetails =() =>{
       )}
     </div>
 
-     -
-      <div>
+    <div>
         <h2>Courses List</h2>
         <div className="sections">
           {courses.map((course) => (
@@ -277,7 +380,6 @@ const AdminCoursesDetails =() =>{
           ))}
         </div>
       </div>
-
 
         <button onClick={handleLogout} className="btn">Logout</button>
 
