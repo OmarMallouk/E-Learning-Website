@@ -34,7 +34,6 @@ const AdminCoursesDetails =() =>{
             console.log(result.data)
             setCourses(result.data.courses || []);
             setInstructors(result.data.instructors || []);
-            setStudents(result.data.students || []);
 
           }
         } catch (error) {
@@ -100,7 +99,10 @@ const AdminCoursesDetails =() =>{
           );
     
           if (response.data.success) {
-            setCourses((prevCourses) => [...prevCourses, response.data.course]); // Update courses list
+            setCourses((prevCourses) => [
+                ...prevCourses,
+                { course_id: response.data.course_id, title, description, instructors: selectedInstructors },
+              ]);
             setTitle("");
             setDescription("");
             setSelectedInstructors([]);
@@ -123,30 +125,38 @@ const AdminCoursesDetails =() =>{
     return(
         <div className="main">
             <Navbar/>
-            <div>
-        <h2>Add Course</h2>
-        <input
-          type="text"
-          value={newCourse.title}
-          onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
-          placeholder="Course Title"
-        />
-        <textarea
-          value={newCourse.description}
-          onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
-          placeholder="Course Description"
-        />
-         <div>
-          <label>Instructors</label>
+            <div className="sect">
+            <h1>Add New Course</h1>
+      {error && <p>{error}</p>}
+
+      <form onSubmit={handleAddCourse} className="section4">
+        <div>
+          <label htmlFor="title">Course Title</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="description">Course Description</label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <label>Select Instructors for the Course</label>
           <select
             multiple
-            value={newCourse.instructors}
-            onChange={(e) =>
-              setNewCourse({
-                ...newCourse,
-                instructors: Array.from(e.target.selectedOptions, (option) => option.value),
-              })
-            }
+            value={selectedInstructors}
+            onChange={(e) => setSelectedInstructors([...e.target.selectedOptions].map(option => option.value))}
           >
             {instructors.map((instructor) => (
               <option key={instructor.user_id} value={instructor.user_id}>
@@ -155,10 +165,12 @@ const AdminCoursesDetails =() =>{
             ))}
           </select>
         </div>
-        <button onClick={handleAddCourse}>Add Course</button>
+
+        <button className="b2" type="submit">Add Course</button>
+      </form>
       </div>
 
-      {/* Edit Course Form */}
+    
       <div>
         <h2>Edit Course</h2>
         <select
@@ -190,7 +202,7 @@ const AdminCoursesDetails =() =>{
         )}
       </div>
 
-      {/* Delete Course Section */}
+    
       <div>
         <h2>Delete Course</h2>
         <select
@@ -207,12 +219,12 @@ const AdminCoursesDetails =() =>{
         {deleteCourseId && <button onClick={handleDeleteCourse}>Delete Course</button>}
       </div>
 
-      {/* Display Courses */}
+     -
       <div>
         <h2>Courses List</h2>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className="sections">
           {courses.map((course) => (
-            <div key={course.course_id} style={{ border: '1px solid #ddd', padding: '10px', margin: '10px' }}>
+            <div key={course.course_id} className="section6">
               <h3>{course.title}</h3>
               <p>{course.description}</p>
             </div>
