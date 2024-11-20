@@ -13,7 +13,13 @@ const Instructor = () => {
     const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
     const [showAnnouncements, setShowAnnouncements] = useState(false);
 
-    
+    const [assignmentTitle, setAssignmentTitle] = useState("");
+    const [assignmentDescription, setAssignmentDescription] = useState("");
+    const [assignments, setAssignments] = useState([]);
+    const [showAssignmentForm, setShowAssignmentForm] = useState(false);
+    const [showAssignments, setShowAssignments] = useState(false);
+
+
 
     useEffect(() => {
         getAll();
@@ -42,7 +48,7 @@ const Instructor = () => {
 
     const closeAnnouncementModal = () => {
         setSelectedCourse(null);
-        setAnnouncementText(""); // Clear the text field when closing the modal
+        setAnnouncementText(""); // Clear the text field when closing modal
         setShowAnnouncementModal(false);
     };
 
@@ -84,6 +90,40 @@ const Instructor = () => {
             console.error("Error fetching announcements:", error);
             alert("Failed to fetch announcements.");
         }
+    };
+
+    const submitAssignment = async () => {
+        try {
+            await axios.post(
+                "http://localhost/reactELearning/backend/add_assignment.php",
+                {
+                    course_id: selectedCourse.course_id,
+                    title: assignmentTitle,
+                    description: assignmentDescription,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.token}`,
+                    },
+                }
+            );
+            alert("Assignment created successfully!");
+            closeAssignmentForm();
+        } catch (error) {
+            console.error("Failed to create assignment", error);
+        }
+    };
+
+
+
+    const openAssignmentForm = (course) => {
+        setSelectedCourse(course);
+        setShowAssignmentForm(true);
+    };
+
+    const closeAssignmentForm = () => {
+        setSelectedCourse(null);
+        setShowAssignmentForm(false);
     };
 
     const handleLogout = () => {
