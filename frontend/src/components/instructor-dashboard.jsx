@@ -102,7 +102,7 @@ const Instructor = () => {
                     course_id: selectedCourse.course_id,
                     title: assignmentTitle,
                     description: assignmentDescription,
-                    due_Date: assignmentDueDate,
+                    due_date: assignmentDueDate,
                 },
                 {
                     headers: {
@@ -144,17 +144,12 @@ const Instructor = () => {
     };
 
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
-    };
 
     return (
         <div className="Instructor-dashboard">
             <Navbar />
             <h1>Welcome Instructor</h1>
-            <button onClick={handleLogout} className="btn">Logout</button>
-
+            
             <div>
                 <h1>Available Courses</h1>
                 <div className="sections">
