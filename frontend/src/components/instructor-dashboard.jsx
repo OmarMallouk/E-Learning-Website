@@ -15,7 +15,9 @@ const Instructor = () => {
 
     const [assignmentTitle, setAssignmentTitle] = useState("");
     const [assignmentDescription, setAssignmentDescription] = useState("");
+    const [assignmentDueDate, setAssignmentDueDate] = useState("");
     const [assignments, setAssignments] = useState([]);
+    const [selectedCourseAssignments, setSelectedCourseAssignments] = useState([]);
     const [showAssignmentForm, setShowAssignmentForm] = useState(false);
     const [showAssignments, setShowAssignments] = useState(false);
 
@@ -69,7 +71,7 @@ const Instructor = () => {
             alert("Announcement posted successfully!");
             closeAnnouncementModal();  // Close modal after submission
         } catch (error) {
-            console.error("Failed to post announcement", error);
+            console.error("Failed to fetch assignments", error.response ? error.response.data : error);
         }
     };
 
@@ -100,6 +102,7 @@ const Instructor = () => {
                     course_id: selectedCourse.course_id,
                     title: assignmentTitle,
                     description: assignmentDescription,
+                    due_Date: assignmentDueDate,
                 },
                 {
                     headers: {
@@ -126,6 +129,21 @@ const Instructor = () => {
         setShowAssignmentForm(false);
     };
 
+    const fetchAssignments = async (course_id) => {
+        try {
+            const response = await axios.get(`http://localhost/reactELearning/backend/get_assignments.php?course_id=${course_id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                },
+            });
+            setSelectedCourseAssignments(response.data.assignments || []);
+            setShowAssignments(true);
+        } catch (error) {
+            console.error("Failed to fetch assignments", error);
+        }
+    };
+
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         navigate('/');
@@ -146,6 +164,8 @@ const Instructor = () => {
                             <p>{course.description}</p>
                             <button onClick={() => fetchAnnouncements(course.course_id)}>View Announcements</button>
                             <button onClick={() => openAnnouncementModal(course)}>Post Announcement</button>
+                            <button onClick={() => openAssignmentForm(course)}>Post Assignments</button>
+                            <button onClick={() => fetchAssignments(course.course_id)}>View Assignments</button>
                         </div>
                     ))}
                 </div>
@@ -184,6 +204,55 @@ const Instructor = () => {
                         )}
                         <button onClick={() => setShowAnnouncements(false)}>Close</button>
                     </div>
+                </div>
+            )}
+
+
+
+{showAssignments && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Assignments for {selectedCourse?.title}</h3>
+                        {selectedCourseAssignments.length > 0 ? (
+                            <ul>
+                                {selectedCourseAssignments.map((assignment) => (
+                                    <li key={assignment.assignment_id}>
+                                         <p><strong>Title:</strong> {assignment.title}</p>
+                            <p><strong>Description:</strong> {assignment.description}</p>
+                            <p><strong>Due Date:</strong> {assignment.due_date}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No assignments available.</p>
+                        )}
+                        <button onClick={() => setShowAssignments(false)}>Close</button>
+                    </div>
+                </div>
+            )}
+
+
+{showAssignmentForm && (
+                <div className="modal">
+                    <h2>Create Assignment for {selectedCourse.title}</h2>
+                    <input
+                        type="text"
+                        placeholder="Assignment Title"
+                        value={assignmentTitle}
+                        onChange={(e) => setAssignmentTitle(e.target.value)}
+                    />
+                    <textarea
+                        placeholder="Assignment Description"
+                        value={assignmentDescription}
+                        onChange={(e) => setAssignmentDescription(e.target.value)}
+                    />
+                    <textarea
+                        placeholder="Assignment Due Date"
+                        value={assignmentDueDate}
+                        onChange={(e) => setAssignmentDueDate(e.target.value)}
+                    />
+                    <button onClick={submitAssignment}>Submit</button>
+                    <button onClick={closeAssignmentForm}>Cancel</button>
                 </div>
             )}
         </div>
