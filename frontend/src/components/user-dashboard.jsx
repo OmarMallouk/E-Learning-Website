@@ -4,7 +4,7 @@ import "../styles/login.css"
 import "../styles/button.css"
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import CourseStream from './CourseStream';
+import CourseStream from "./courseStream";
 import Navbar from './navbar'
 
 
@@ -62,7 +62,7 @@ const Student = () =>{
 ///////////////////////////////
 
 const handleCourseSelect = (courseId) => {
-  setSelectedCourseId(courseId); // Set the selected course ID
+  navigate(`/courseStream/${courseId}`);
 };
 
 if (loading) {
@@ -93,6 +93,9 @@ if (courses.length === 0) {
           {courses.map((course) => (
             <li key={course.course_id}>
               {course.title}
+              <button onClick={() => handleCourseSelect(course.course_id)}>
+              View Course Stream
+            </button>
             </li>
           ))}
         </ul>
@@ -101,22 +104,7 @@ if (courses.length === 0) {
       )}
     </div>
 
-    <div>
-      <h2>Welcome to Your Dashboard</h2>
-      
-      <h3>Select a Course to View Stream</h3>
-      
-      <select onChange={(e) => handleCourseSelect(e.target.value)} value={selectedCourseId}>
-        <option value="">-- Select a Course --</option>
-        {courses.map((course) => (
-          <option key={course.course_id} value={course.course_id}>
-            {course.title}
-          </option>
-        ))}
-      </select>
-
-      {selectedCourseId && <CourseStream courseId={selectedCourseId} />}
-    </div>
+   
             
             <button onClick={handleInvite}>View Invitations</button>
         </div>

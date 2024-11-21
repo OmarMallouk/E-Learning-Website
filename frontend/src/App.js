@@ -6,6 +6,7 @@ import Student from './components/user-dashboard';
 import StudentInvitation from './pages/studentInvitation';
 import Admin from './components/adminDashboard';
 import AdminCourseDetails from './pages/adminCoursesDetail';
+import CourseStream from './components/courseStream';
 import './App.css';
 
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -27,6 +28,7 @@ function App() {
         <Route path="/adminCoursesDetail" element={ <AdminCoursesDetails/>}/>
         <Route path="/inviteStudent" element={ <StudentInvite/>}/>
         <Route path="/invitations" element={ <StudentInvitation/>}/>
+        <Route path="/courseStream/:courseId" element={<CourseStream/>} />
      
       </Routes>
     </div>
