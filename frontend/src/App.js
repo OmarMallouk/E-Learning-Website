@@ -3,6 +3,7 @@ import Signup from './components/singup';
 import Login from './components/login';
 import Instructor from './components/instructor-dashboard';
 import Student from './components/user-dashboard';
+import StudentInvitation from './pages/studentInvitation';
 import Admin from './components/adminDashboard';
 import AdminCourseDetails from './pages/adminCoursesDetail';
 import './App.css';
@@ -25,6 +26,7 @@ function App() {
         <Route path="/adminDash" element={ <Admin/>}/>
         <Route path="/adminCoursesDetail" element={ <AdminCoursesDetails/>}/>
         <Route path="/inviteStudent" element={ <StudentInvite/>}/>
+        <Route path="/invitations" element={ <StudentInvitation/>}/>
      
       </Routes>
     </div>
