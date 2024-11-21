@@ -76,6 +76,49 @@ const Student = () =>{
       }
 
 
+
+      const acceptInvitation = async (inviteId, courseId) => {
+        try {
+            const response = await axios.post("http://localhost/reactELearning/backend/accept_invite.php", {
+                invite_id: inviteId,
+                status: 'accepted',
+                course_id: courseId,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                },
+            });
+            if (response.data.success) {
+                alert("Invitation accepted!");
+                fetchInvitations(); // Refresh invitations
+            } else {
+                alert("Failed to accept invitation.");
+            }
+        } catch (error) {
+            console.error("Error accepting invitation:", error);
+        }
+    };
+
+    const declineInvitation = async (inviteId) => {
+        try {
+            const response = await axios.post("http://localhost/reactELearning/backend/decline_invite.php", {
+                invite_id: inviteId,
+                status: 'declined',
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                },
+            });
+            if (response.data.success) {
+                alert("Invitation declined.");
+                fetchInvitations(); // Refresh invitations
+            } else {
+                alert("Failed to decline invitation.");
+            }
+        } catch (error) {
+            console.error("Error declining invitation:", error);
+        }
+    };
  
     return(
         <div className="User-dashboard">
@@ -105,8 +148,8 @@ const Student = () =>{
                     {invitations.map(invite => (
                         <li key={invite.invite_id}>
                             Course: {invite.course_title}
-                            {/* <button onClick={() => acceptInvitation(invite.invite_id, invite.course_id)}>Accept</button> */}
-                            {/* <button onClick={() => declineInvitation(invite.invite_id)}>Decline</button> */}
+                            <button onClick={() => acceptInvitation(invite.invite_id, invite.course_id)}>Accept</button>
+                            <button onClick={() => declineInvitation(invite.invite_id)}>Decline</button>
                         </li>
                     ))}
                 </ul>
