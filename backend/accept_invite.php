@@ -17,6 +17,10 @@ $secret_key = 'omarito';
 
 $decodedToken = verifyToken($secret_key);
 
+if (!isset($decodedToken['user_id'])) {
+    echo json_encode(["success" => false, "message" => "Invalid token."]);
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -27,9 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($status == 'accepted') {
         $updateQuery = "UPDATE invitations SET status = 'accepted' WHERE invite_id = '$invite_id'";
         if (mysqli_query($conn, $updateQuery)) {
-            $insertQuery = "INSERT INTO student_courses (student_id, course_id) VALUES ('$student_id', '$course_id')";
-            mysqli_query($conn, $insertQuery);
-            echo json_encode(["success" => true, "message" => "Invitation accepted and enrolled in the course."]);
+            $student_id = $decodedToken['user_id'];
+            
+            $insertQuery = "INSERT INTO enrollments (student_id, course_id) VALUES ('$student_id', '$course_id')";
+            if (mysqli_query($conn, $insertQuery)) {
+                echo json_encode(["success" => true, "message" => "Invitation accepted and enrolled in the course."]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Error enrolling in the course."]);
+            }
         } else {
             echo json_encode(["success" => false, "message" => "Error accepting invitation."]);
         }
