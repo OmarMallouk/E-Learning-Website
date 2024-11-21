@@ -1,6 +1,4 @@
 <?php
-// Assume you have already connected to the database
-
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
