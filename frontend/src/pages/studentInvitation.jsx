@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/login.css";
+import "../styles/button.css"
 import { useNavigate } from 'react-router-dom';
 import Navbar from "../components/navbar";
 
@@ -123,7 +124,6 @@ const StudentInvitation = () =>{
         <div className="User-dashboard">
             <Navbar/>
 
-                <h1>Welcome Student!!</h1>
                 <h2>Enrolled Courses</h2>
       <ul>
         {courses.length > 0 ? (
@@ -147,8 +147,8 @@ const StudentInvitation = () =>{
                     {invitations.map(invite => (
                         <li key={invite.invite_id}>
                             Course: {invite.course_title}
-                            <button onClick={() => acceptInvitation(invite.invite_id, invite.course_id)}>Accept</button>
-                            <button onClick={() => declineInvitation(invite.invite_id)}>Decline</button>
+                            <button onClick={() => acceptInvitation(invite.invite_id, invite.course_id)} className="editbtn">Accept</button>
+                            <button onClick={() => declineInvitation(invite.invite_id)} className="editbtn">Decline</button>
                         </li>
                     ))}
                 </ul>
